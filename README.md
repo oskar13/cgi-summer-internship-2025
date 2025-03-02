@@ -1,5 +1,15 @@
- 
- ## Project planning stage
+ # CGI Summer Internship 2025 Test Assignment
+
+## **📂 Project Structure**  
+This repository is organized into two main parts:  
+- **`/frontend`** – A React application built with Vite and TailwindCSS.  
+- **`/backend`** – A Spring Boot application that handles flight data - **mock** and **real API** (SerpAPI - Google Flights).  
+
+For more details, refer to the README files inside each folder.
+
+---
+
+ ## Project Planning Stage
 I started the planning phase with research about flight data APIs. Then I decided to create a set of functional requirements by analyzing the instructions and setting concrete goals for my desired implementation of this project while making sure I fulfil the requirements set by the assignment. This process took a full day.
 
 
@@ -46,6 +56,8 @@ I started the planning phase with research about flight data APIs. Then I decide
  #### **2.4 Checkout**
  - On the shopping cart page, the user will be able to review flight data and press the checkout button.
  - After pressing the checkout button, user can view the data in "My Flights" tab. 
+ 
+ ---
  
  ### **3. API Integration**  
 The application must support toggle to select between real and mock API.
