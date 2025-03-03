@@ -1,8 +1,11 @@
 package com.jooseposkarehaver.booknfly.model;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 
+
+// Used for individual flight legs not whole flight results.
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Flight {
     private List<Flight> flights;

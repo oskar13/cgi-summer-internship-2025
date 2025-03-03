@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FlightItinerary { // ✅ Renamed from BestFlight
+public class FlightItinerary {
 
     private List<Flight> flights;  // Individual flight legs
     private List<Layover> layovers;

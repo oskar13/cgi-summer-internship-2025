@@ -11,8 +11,8 @@ import java.util.List;
 public class FlightSearchResponse {
 
     @JsonProperty("best_flights")
-    private List<BestFlight> bestFlights;
+    private List<FlightItinerary> bestFlights;
 
     @JsonProperty("other_flights")
-    private List<BestFlight> otherFlights; // Same structure as bestFlights
+    private List<FlightItinerary> otherFlights; // Same structure as best_flights
 }
