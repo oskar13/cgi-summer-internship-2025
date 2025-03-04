@@ -3,15 +3,19 @@ package com.jooseposkarehaver.booknfly.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 
 import java.util.List;
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FlightSearchRequest {
+
+    @NotBlank(message = "Missing `origin` parameter.")
     private String origin;
+
+    @NotBlank(message = "Missing `destination` parameter.")
     private String destination;
     private Integer type; // 1 - Round trip (not implemented yet), 2 - One way
     private Integer adults = 1;

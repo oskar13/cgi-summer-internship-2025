@@ -4,6 +4,7 @@ package com.jooseposkarehaver.booknfly.controller;
 import com.jooseposkarehaver.booknfly.model.FlightSearchRequest;
 import com.jooseposkarehaver.booknfly.model.FlightSearchResponse;
 import com.jooseposkarehaver.booknfly.service.MockFlightService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,8 +17,8 @@ public class FlightController {
         this.mockFlightService = mockFlightService;
     }
 
-    @GetMapping("/flights")
-    public FlightSearchResponse getMockFlights(@ModelAttribute FlightSearchRequest request) {
+    @PostMapping("/flights")
+    public FlightSearchResponse getMockFlights(@Valid @RequestBody FlightSearchRequest request) {
         return mockFlightService.generateMockFlights(request);
     }
 }
