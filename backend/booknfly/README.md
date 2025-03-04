@@ -10,9 +10,31 @@ The API follows closely the API design of https://serpapi.com/google-flights-api
 
 Main difference being that minimum average legroom (min_avg_legroom) is not a query option in the SerpApi so I have to filter the results further myself.
 
-### Get available flights example
+### Flight Info API `GET /api/flights`
+**GET request structure overview:**
 
+```json
+{
+    "origin": "String - Departure airport IATA code",
+    "destination": "String - Arrival airport IATA code",
+    "type": "Integer - 1 - Round trip (not implemented yet), 2 - One way",
+    "adults": "Integer - Parameter defines the number of adults. Default to 1.",
+    "children": "Integer - Parameter defines the number of children. Default to 0.",
+    "outbound_date": "String - Parameter defines the outbound date. The format is YYYY-MM-DD. e.g. 2025-03-02",
+    "return_date": "String - Parameter defines the return date. The format is YYYY-MM-DD. e.g. 2025-03-08",
+    "travel_class": "Integer (optional) - Parameter defines the travel class. Available options: 1 - Economy (default), 2 - Premium economy, 3 - Business, 4 - First",
+    "max_price": "Integer (optional) - If not present defaults to unlimited",
+    "max_duration": "Integer (optional) - Parameter defines the maximum flight duration, in minutes. For example, specify 1500 for 25 hours.",
+    "stops": "Integer (optional) - Defines the number of stops during the flight. Available options: 0 - Any number of stops (default), 1 - Nonstop only, 2 - 1 stop or fewer, 3 - 2 stops or fewer",
+    "min_avg_legroom": "Integer (optional) - Defines minimal average legroom for the flight in centimeters",
+    "extra_options": "String array consisting of options that are used for seat recommendation - ['extra_legroom', 'window_seats', 'group_seating', 'close_to_exit']"
+}
+
+```
+
+#### Example
 **Endpoint:** `GET /api/flights`
+
 *Request:*
 ```json
 {
