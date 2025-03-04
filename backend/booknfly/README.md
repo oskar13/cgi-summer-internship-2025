@@ -26,7 +26,7 @@ Main difference being that minimum average legroom (min_avg_legroom) is not a qu
     "max_price": "Integer (optional) - If not present defaults to unlimited",
     "max_duration": "Integer (optional) - Parameter defines the maximum flight duration, in minutes. For example, specify 1500 for 25 hours.",
     "stops": "Integer (optional) - Defines the number of stops during the flight. Available options: 0 - Any number of stops (default), 1 - Nonstop only, 2 - 1 stop or fewer, 3 - 2 stops or fewer",
-    "min_avg_legroom": "Integer (optional) - Defines minimal average legroom for the flight in centimeters.",
+    "min_avg_legroom": "Integer (optional) - Defines minimal average legroom for the flight in centimeters. Must be over 50",
     "extra_legroom": "Boolean (optional) - On seating plan search for seats marked with extra legroom.",
     "window_seats": "Boolean (optional) - On seating plan search for seats marked as window seats.",
     "group_seating": "Boolean (optional) - On seating plan find seats next to each other depending on the number of tickets.",
