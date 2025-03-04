@@ -26,8 +26,11 @@ Main difference being that minimum average legroom (min_avg_legroom) is not a qu
     "max_price": "Integer (optional) - If not present defaults to unlimited",
     "max_duration": "Integer (optional) - Parameter defines the maximum flight duration, in minutes. For example, specify 1500 for 25 hours.",
     "stops": "Integer (optional) - Defines the number of stops during the flight. Available options: 0 - Any number of stops (default), 1 - Nonstop only, 2 - 1 stop or fewer, 3 - 2 stops or fewer",
-    "min_avg_legroom": "Integer (optional) - Defines minimal average legroom for the flight in centimeters",
-    "extra_options": "String array consisting of options that are used for seat recommendation - ['extra_legroom', 'window_seats', 'group_seating', 'close_to_exit']"
+    "min_avg_legroom": "Integer (optional) - Defines minimal average legroom for the flight in centimeters.",
+    "extra_legroom": "Boolean (optional) - On seating plan search for seats marked with extra legroom.",
+    "window_seats": "Boolean (optional) - On seating plan search for seats marked as window seats.",
+    "group_seating": "Boolean (optional) - On seating plan find seats next to each other depending on the number of tickets.",
+    "close_to_exit": "Boolean (optional) - On seating plan find seats that are marked close to exit."
 }
 
 ```
@@ -50,7 +53,10 @@ Main difference being that minimum average legroom (min_avg_legroom) is not a qu
     "max_duration": "1000",
     "stops": 0,
     "min_avg_legroom": 70,
-    "extra_options": ["extra_legroom", "window_seats", "group_seating", "close_to_exit"]
+    "extra_legroom": false,
+    "window_seats": true,
+    "group_seating": false,
+    "close_to_exit": false
 }
 
 ```
