@@ -937,7 +937,13 @@ Main difference being that minimum average legroom (min_avg_legroom) is not a qu
                         }
                     ]
                 }
-            ]
+            ],
+            "seating_options": {
+                "extra_legroom": false,
+                "window_seats": true,
+                "group_seating": false,
+                "close_to_exit": false
+            }
         }
     
     ```

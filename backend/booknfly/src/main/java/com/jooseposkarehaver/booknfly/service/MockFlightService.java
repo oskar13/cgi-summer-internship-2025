@@ -30,6 +30,16 @@ public class MockFlightService {
         response.setBestFlights(itineraries.subList(0, Math.min(2, itineraries.size())));
         response.setOtherFlights(itineraries.subList(Math.min(2, itineraries.size()), itineraries.size()));
 
+        // Map seating preferences
+        SeatingOptions seatingOptions = new SeatingOptions();
+        seatingOptions.setExtraLegroom(request.getExtraLegroom());
+        seatingOptions.setWindowSeats(request.getWindowSeats());
+        seatingOptions.setGroupSeating(request.getGroupSeating());
+        seatingOptions.setCloseToExit(request.getCloseToExit());
+
+        response.setSeatingOptions(seatingOptions);
+
+
         return response;
     }
 

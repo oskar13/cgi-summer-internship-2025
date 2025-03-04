@@ -15,4 +15,7 @@ public class FlightSearchResponse {
 
     @JsonProperty("other_flights")
     private List<FlightItinerary> otherFlights; // Same structure as best_flights
+
+    @JsonProperty("seating_options")
+    private SeatingOptions seatingOptions;
 }
