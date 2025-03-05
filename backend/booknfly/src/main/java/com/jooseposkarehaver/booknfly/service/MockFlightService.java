@@ -22,7 +22,6 @@ public class MockFlightService {
 
     public FlightSearchResponse generateMockFlights(FlightSearchRequest request) {
 
-        System.out.println(request);
 
         FlightSearchResponse response = new FlightSearchResponse();
 
