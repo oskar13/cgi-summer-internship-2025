@@ -35,6 +35,7 @@ public class MockFlightService {
         seatingOptions.setWindowSeats(request.getWindowSeats());
         seatingOptions.setGroupSeating(request.getGroupSeating());
         seatingOptions.setCloseToExit(request.getCloseToExit());
+        seatingOptions.setSeatingClass(request.getType());
 
         response.setSeatingOptions(seatingOptions);
 

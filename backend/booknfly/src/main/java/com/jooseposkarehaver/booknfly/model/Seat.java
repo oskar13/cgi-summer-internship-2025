@@ -30,6 +30,6 @@ public class Seat {
     private boolean suggested;  // Seat suggested for reservation
 
     @JsonProperty("selected")
-    private boolean selected;  // Seat suggested for reservation
+    private boolean selected;  // Seat selection confirmed by user
 
 }

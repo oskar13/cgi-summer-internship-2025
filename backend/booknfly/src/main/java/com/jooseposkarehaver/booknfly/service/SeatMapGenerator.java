@@ -1,54 +1,47 @@
 package com.jooseposkarehaver.booknfly.service;
 
 import com.jooseposkarehaver.booknfly.model.Seat;
+import com.jooseposkarehaver.booknfly.model.SeatingMessage;
+import com.jooseposkarehaver.booknfly.model.SeatingResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SeatMapGenerator {
 
-    public static List<Seat> generateSeatMap(double occupancy, int tickets, boolean extraLegroom, boolean windowSeats, boolean groupSeating, boolean closeToExit) {
-        List<Seat> seatMap = new ArrayList<>();
-        Random random = new Random();
 
-        // Generate the airplane seating plan
+    public static SeatingResponse generateSeatMap(String bookingId, int tickets, boolean extraLegroom, boolean windowSeats, boolean groupSeating, boolean closeToExit, String seatingClass) {
+        // Use a hash of the booking ID to create a deterministic randomness
+        long seed = (bookingId != null) ? bookingId.hashCode() : "123456789".hashCode();
+        Random random = new Random(seed);
+
+        List<Seat> seatMap = new ArrayList<>();
+
+        // Generate a seat layout
         for (int row = 1; row <= 25; row++) {
             String seatClass = determineSeatClass(row);
 
             for (char seat = 'A'; seat <= 'F'; seat++) {
                 List<String> features = new ArrayList<>();
+                if (row <= 6 || (row >= 14 && (seat == 'A' || seat == 'F'))) features.add("extra_legroom");
+                if (seat == 'A' || seat == 'F') features.add("window_seat");
+                if (row == 7 || row == 13 || row == 14 || row == 25) features.add("close_to_exit");
 
-                if (row <= 6 || (row >= 14 && (seat == 'A' || seat == 'F'))) {
-                    features.add("extra_legroom");
-                }
-                if (seat == 'A' || seat == 'F') {
-                    features.add("window_seat");
-                }
-                if (row == 7 || row == 13 || row == 14 || row == 25) {
-                    features.add("close_to_exit");
-                }
+                boolean occupied = random.nextDouble() < 0.3; // 30% of seats occupied
 
-                // Determine if the seat should be randomly occupied
-                boolean occupied = random.nextDouble() < occupancy;
-
-                Seat newSeat = new Seat(
-                        row + String.valueOf(seat),
-                        row,
-                        seatClass,
-                        features,
-                        !occupied,  // Available if not occupied
-                        false,  // Not suggested yet
-                        null   // No messages yet
+                Seat newSeat = new Seat(row + String.valueOf(seat), row, seatClass, features, !occupied,  // Available if not occupied
+                        false, // Not suggested yet,
+                        false // Not selected yet.
                 );
 
                 seatMap.add(newSeat);
             }
         }
 
-        // Suggest seats based on preferences
-        suggestSeats(seatMap, tickets, extraLegroom, windowSeats, groupSeating, closeToExit);
+        // Find and suggest seats
+        SeatingMessage seatMessage = suggestSeats(seatMap, tickets, seatingClass , extraLegroom, windowSeats, groupSeating, closeToExit);
 
-        return seatMap;
+        return new SeatingResponse(seatMap, seatMessage);
     }
 
     private static String determineSeatClass(int row) {
@@ -58,50 +51,82 @@ public class SeatMapGenerator {
         return "Economy";
     }
 
-    private static void suggestSeats(List<Seat> seatMap, int tickets, boolean extraLegroom, boolean windowSeats, boolean groupSeating, boolean closeToExit) {
+
+    private static SeatingMessage suggestSeats(List<Seat> seatMap, int tickets, String seatingClass, boolean extraLegroom, boolean windowSeats, boolean groupSeating, boolean closeToExit) {
+        // Filter available seats by seating class
         List<Seat> availableSeats = seatMap.stream()
                 .filter(Seat::isAvailable)
+                .filter(seat -> seat.getSeatClass().equals(seatingClass))
                 .collect(Collectors.toList());
 
-        List<Seat> matchingSeats = new ArrayList<>();
-
-        for (Seat seat : availableSeats) {
-            boolean matches = true;
-
-            if (extraLegroom && !seat.getFeatures().contains("extra_legroom")) matches = false;
-            if (windowSeats && !seat.getFeatures().contains("window_seat")) matches = false;
-            if (closeToExit && !seat.getFeatures().contains("close_to_exit")) matches = false;
-
-            if (matches) matchingSeats.add(seat);
+        if (availableSeats.isEmpty()) {
+            return new SeatingMessage("error", "No available seats in the selected seating class.");
         }
 
-        // If we need group seating, try to pick tickets from the same row
+        // Solo ticket case - prioritize preferences
+        if (tickets == 1) {
+            for (Seat seat : availableSeats) {
+                boolean matches = true;
+                if (extraLegroom && !seat.getFeatures().contains("extra_legroom")) matches = false;
+                if (windowSeats && !seat.getFeatures().contains("window_seat")) matches = false;
+                if (closeToExit && !seat.getFeatures().contains("close_to_exit")) matches = false;
+
+                if (matches) {
+                    seat.setSuggested(true);
+                    return null; // No message needed
+                }
+            }
+
+
+            availableSeats.get(0).setSuggested(true);
+            return new SeatingMessage("warning", "No seats fully matched your preferences, but a seat was assigned.");
+        }
+
+        // Group seating case
         if (groupSeating) {
-            Map<Integer, List<Seat>> seatsByRow = matchingSeats.stream()
-                    .collect(Collectors.groupingBy(Seat::getRow));
+            Map<Integer, List<Seat>> seatsByRow = availableSeats.stream().collect(Collectors.groupingBy(Seat::getRow));
 
             for (List<Seat> rowSeats : seatsByRow.values()) {
                 if (rowSeats.size() >= tickets) {
                     for (int i = 0; i < tickets; i++) {
                         rowSeats.get(i).setSuggested(true);
                     }
-                    return;
+                    return null;
                 }
+            }
+
+            // If not enough seats in a single row, break up the group
+            List<Seat> assignedSeats = new ArrayList<>();
+            for (Seat seat : availableSeats) {
+                if (assignedSeats.size() < tickets) {
+                    seat.setSuggested(true);
+                    assignedSeats.add(seat);
+                }
+            }
+
+            if (assignedSeats.size() < tickets) {
+                return new SeatingMessage("warning", "Not enough seats in the same row, but seats were assigned close together.");
+            }
+            return new SeatingMessage("info", "Seats assigned in multiple rows due to limited availability.");
+        }
+
+        // If group seating is off, just find best available seats
+        List<Seat> selectedSeats = new ArrayList<>();
+        for (Seat seat : availableSeats) {
+            if (selectedSeats.size() < tickets) {
+                seat.setSuggested(true);
+                selectedSeats.add(seat);
             }
         }
 
-        // Otherwise, just pick any matching seats
-        for (int i = 0; i < tickets && i < matchingSeats.size(); i++) {
-            matchingSeats.get(i).setSuggested(true);
+        if (selectedSeats.size() < tickets) {
+            return new SeatingMessage("warning", "Not enough seats available matching all criteria.");
         }
 
-        // If not enough seats were found, return a message
-        if (matchingSeats.size() < tickets) {
-            for (Seat seat : seatMap) {
-                if (seat.isAvailable() && !seat.isSuggested()) {
-                    seat.setMessage("Not enough seats available matching all criteria.");
-                }
-            }
-        }
+        return null;
     }
+
+
+
+
 }

@@ -66,6 +66,9 @@ public class FlightSearchRequest {
     @JsonProperty("min_avg_legroom")
     private Integer minAvgLegroom = 50; // Minimum average legroom in cm
 
+
+    //Seationg Options
+
     // Seating finder
     @JsonProperty("extra_legroom")
     private Boolean extraLegroom = false;

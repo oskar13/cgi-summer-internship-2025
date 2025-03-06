@@ -17,4 +17,7 @@ public class SeatingOptions {
 
     @JsonProperty("close_to_exit")
     private Boolean closeToExit;
+
+    @JsonProperty("seating_class")
+    private Integer seatingClass = 1;
 }

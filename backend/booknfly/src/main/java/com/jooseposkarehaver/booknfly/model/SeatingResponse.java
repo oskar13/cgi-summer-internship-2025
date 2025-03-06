@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SeatResponse {
+public class SeatingResponse {
     @JsonProperty("seats")
     private List<Seat> seats;
 
