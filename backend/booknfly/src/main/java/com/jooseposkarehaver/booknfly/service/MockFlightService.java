@@ -88,7 +88,7 @@ public class MockFlightService {
             flight.setTravelClass(request.getTravelClass());
             flight.setFlightNumber("MK" + (100 + random.nextInt(900)));
             //flight.setExtensions(getRandomExtensions(request.getExtraOptions()));
-            flight.setLegroom(getLegroomForClass(flight.getTravelClass(),request.getMinAvgLegroom()));
+            flight.setLegroom(getLegroomForClass(flight.getTravelClass(),request.getMinAvgLegroom(), random));
             flight.setOvernight(departureTime.getDayOfMonth() != arrivalTime.getDayOfMonth());
 
             flights.add(flight);
@@ -102,6 +102,9 @@ public class MockFlightService {
         itinerary.setFlights(flights);
         itinerary.setTotalDuration(totalDuration);
         itinerary.setPrice(price);
+
+        // Important, generate booking token that is used for flight details generation, must be deterministic and unique to this flight
+        itinerary.setBookingToken((request.getSeed() +  request.getOrigin() + request.getDestination() + totalDuration + price));
 
         return itinerary;
     }
@@ -123,8 +126,8 @@ public class MockFlightService {
         return extraOptions;
     }
 
-    private String getLegroomForClass(String travelClass, Integer minLegroom) {
-        Random random = new Random();
+    private String getLegroomForClass(String travelClass, Integer minLegroom, Random random) {
+
 
         // Base legroom values for different classes
         int baseLegroom = switch (travelClass) {

@@ -1,45 +1,195 @@
 import { useState } from "react";
 import { FlightSearchRequest } from "../types";
 
+const API_URL = "https://airport-autosuggest.flightright.net/v1/airports/COM?name=";
+
 const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => void }) => {
-    const [formData, setFormData] = useState<FlightSearchRequest>({
-        origin: "",
-        destination: "",
-        outbound_date: "",
-        travel_class: "1",
-        adults: 1,
-        children: 0,
-        stops: 0,
-        seed: Date.now().toString(),
-    });
+	const [formData, setFormData] = useState<FlightSearchRequest>({
+		origin: "",
+		destination: "",
+		outbound_date: "",
+		travel_class: "1",
+		adults: 1,
+		children: 0,
+		stops: 0,
+		max_price: undefined,
+		max_duration: undefined,
+		extra_legroom: false,
+		window_seats: false,
+		group_seating: false,
+		close_to_exit: false,
+		seed: "", // Seed will be generated dynamically
+	});
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+	const [suggestions, setSuggestions] = useState<{ iata: string; name: string }[]>([]);
+	const [activeField, setActiveField] = useState<"origin" | "destination" | null>(null);
+	const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSearch(formData);
-    };
 
-    return (
-        <form onSubmit={handleSubmit} className="bg-white p-4 shadow rounded-lg">
-            <div className="grid grid-cols-2 gap-4">
-                <input name="origin" placeholder="Origin" onChange={handleChange} required className="border p-2 rounded" />
-                <input name="destination" placeholder="Destination" onChange={handleChange} required className="border p-2 rounded" />
-                <input type="date" name="outbound_date" onChange={handleChange} required className="border p-2 rounded" />
-                <select name="travel_class" onChange={handleChange} className="border p-2 rounded">
-                    <option value="1">Economy</option>
-                    <option value="2">Premium Economy</option>
-                    <option value="3">Business</option>
-                    <option value="4">First</option>
-                </select>
-                <input type="number" name="adults" min="1" onChange={handleChange} className="border p-2 rounded" />
-                <input type="number" name="children" min="0" onChange={handleChange} className="border p-2 rounded" />
-                <button type="submit" className="bg-blue-500 text-white p-2 rounded">Search Flights</button>
-            </div>
-        </form>
-    );
+	// Generate the seed based on selected fields
+	const generateSeed = () => {
+		return `${formData.origin}${formData.destination}${formData.outbound_date}${formData.max_price}${formData.max_duration}`;
+	};
+
+	const fetchAirportSuggestions = async (query: string) => {
+		if (!query) {
+			setSuggestions([]);
+			return;
+		}
+
+		try {
+			const response = await fetch(API_URL + encodeURIComponent(query));
+			if (!response.ok) throw new Error("API error");
+			const data = await response.json();
+			setSuggestions(data || []);
+		} catch (error) {
+			console.warn("Airport autocomplete API failed", error);
+			setSuggestions([]); // Silent fallback
+		}
+	};
+
+	const handleSelectAirport = (iata: string) => {
+		if (!activeField) return;
+		setFormData((prev) => ({ ...prev, [activeField]: iata }));
+		setSuggestions([]);
+		setActiveField(null);
+	};
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+		const { name, value, type } = e.target;
+
+		const isCheckbox = e.target instanceof HTMLInputElement && type === "checkbox";
+
+		setFormData((prevData) => ({
+			...prevData,
+			[name]: isCheckbox ? (e.target as HTMLInputElement).checked : value,
+		}));
+
+		if (name === "origin" || name === "destination") {
+			setActiveField(name);
+
+			// Debounce API call (waits 1 second after user stops typing)
+			if (typingTimeout) clearTimeout(typingTimeout);
+			const newTimeout = setTimeout(() => fetchAirportSuggestions(value), 1000);
+			setTypingTimeout(newTimeout);
+		}
+	};
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		const finalData = {
+			...formData,
+			seed: generateSeed(),
+			max_duration: formData.max_duration ? formData.max_duration * 60 : undefined, // Convert hours to minutes
+		};
+		onSearch(finalData);
+	};
+
+	return (
+		<form onSubmit={handleSubmit} className="bg-white p-4 shadow rounded-lg">
+			<div className="grid grid-cols-2 gap-4">
+				<div className="relative">
+					<label htmlFor="origin">Flying from</label>
+					<input
+						name="origin"
+						placeholder="Origin"
+						value={formData.origin}
+						onChange={handleChange}
+						required
+						className="border p-2 rounded w-full"
+					/>
+					{activeField === "origin" && suggestions.length > 0 && (
+						<ul className="absolute bg-white border rounded w-full mt-1 max-h-40 overflow-auto z-10">
+							{suggestions.map((airport) => (
+								<li
+									key={airport.iata}
+									onClick={() => handleSelectAirport(airport.iata)}
+									className="p-2 cursor-pointer hover:bg-gray-200"
+								>
+									{airport.name} ({airport.iata})
+								</li>
+							))}
+						</ul>
+					)}
+
+				</div>
+				<div className="relative">
+					<label htmlFor="destination">Flying to</label>
+					<input
+						name="destination"
+						placeholder="Destination"
+						value={formData.destination}
+						onChange={handleChange}
+						required
+						className="border p-2 rounded w-full"
+					/>
+					{activeField === "destination" && suggestions.length > 0 && (
+						<ul className="absolute bg-white border rounded w-full mt-1 max-h-40 overflow-auto z-10">
+							{suggestions.map((airport) => (
+								<li
+									key={airport.iata}
+									onClick={() => handleSelectAirport(airport.iata)}
+									className="p-2 cursor-pointer hover:bg-gray-200"
+								>
+									{airport.name} ({airport.iata})
+								</li>
+							))}
+						</ul>
+					)}
+				</div>
+				<input type="date" name="outbound_date" onChange={handleChange} required className="border p-2 rounded" />
+
+				<select name="travel_class" onChange={handleChange} className="border p-2 rounded">
+					<option value="1">Economy</option>
+					<option value="2">Premium Economy</option>
+					<option value="3">Business</option>
+					<option value="4">First</option>
+				</select>
+
+				<div className="flex flex-col">
+					<label>Adults</label>
+					<input type="number" name="adults" min="1" value={formData.adults} onChange={handleChange} className="border p-2 rounded" />
+				</div>
+
+				<div className="flex flex-col">
+					<label>Children</label>
+					<input type="number" name="children" min="0" value={formData.children} onChange={handleChange} className="border p-2 rounded" />
+				</div>
+
+				<div className="flex flex-col">
+					<label>Max Price ($)</label>
+					<input type="number" name="max_price" min="0" value={formData.max_price || ""} onChange={handleChange} className="border p-2 rounded" />
+				</div>
+
+				<div className="flex flex-col">
+					<label>Max Duration (hours)</label>
+					<input type="number" name="max_duration" min="1" value={formData.max_duration || ""} onChange={handleChange} className="border p-2 rounded" />
+				</div>
+
+				<h3 className="font-light text-xl">Seating Options:</h3>
+				<div className="col-span-2 grid grid-cols-2 gap-2">
+					<label className="flex items-center">
+						<input type="checkbox" name="extra_legroom" checked={formData.extra_legroom} onChange={handleChange} className="mr-2" />
+						Extra Legroom
+					</label>
+					<label className="flex items-center">
+						<input type="checkbox" name="window_seats" checked={formData.window_seats} onChange={handleChange} className="mr-2" />
+						Window Seats
+					</label>
+					<label className="flex items-center">
+						<input type="checkbox" name="group_seating" checked={formData.group_seating} onChange={handleChange} className="mr-2" />
+						Group Seating
+					</label>
+					<label className="flex items-center">
+						<input type="checkbox" name="close_to_exit" checked={formData.close_to_exit} onChange={handleChange} className="mr-2" />
+						Close to Exit
+					</label>
+				</div>
+
+				<button type="submit" className="col-span-2 bg-blue-500 text-white p-2 rounded">Search Flights</button>
+			</div>
+		</form>
+	);
 };
 
 export default SearchForm;
