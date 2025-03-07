@@ -5,13 +5,15 @@ This is the frontend for Book n' Fly, a flight planning and seat recommendation 
 Built with React, Vite, and TailwindCSS.
 
 
-# API Data Source: Real vs. Mock
+# Flight Data Source: Real vs. Mock
 
-The backend handles switching between:
- - Mock API (for local development & testing)
- - SerpAPI (Real API) (for "production" use)
+The backend offers 2 sources of data, one is mock data generated based on deterministic random generator that takes the seed from input data. The other data is actual flight data from Google Flights. More info in the project main README.md file.
 
-The frontend always calls the same backend endpoints, and the backend determines whether to return mock data or live data based on its internal configuration.
+The frontend can switch between the mock and real data endpoints, this is mainly for testing and making sure that API calls are kept to minimum because they are quite limited in quantity.
+
+## IATA code suggestion 
+I found a easy to use API for finding airport IATA codes: https://airport-autosuggest.flightright.net/v1/airports/COM?name=london
+Its called 1 second after the user stops typing a location name to get airport code suggestions.
 
 
 # Installation & Setup
