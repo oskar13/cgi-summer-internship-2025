@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/mock")
 public class FlightController {
 
@@ -16,6 +17,7 @@ public class FlightController {
     public FlightController(MockFlightService mockFlightService) {
         this.mockFlightService = mockFlightService;
     }
+
 
     @PostMapping("/flights")
     public FlightSearchResponse getMockFlights(@Valid @RequestBody FlightSearchRequest request) {

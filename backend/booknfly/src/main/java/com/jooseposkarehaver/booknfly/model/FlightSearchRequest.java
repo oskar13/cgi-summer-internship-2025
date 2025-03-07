@@ -46,12 +46,10 @@ public class FlightSearchRequest {
     @JsonProperty("travel_class")
     private String travelClass = "1"; // 1 - Economy, 2 - Premium Economy, 3 - Business, 4 - First
 
-    @NotNull(message = "Missing `max_price` parameter.")
     @Min(value = 0, message = "Must be a positive integer")
     @JsonProperty("max_price")
     private Integer maxPrice;
 
-    @NotNull(message = "Missing `max_duration` parameter.")
     @Min(value = 0, message = "Must be a positive integer")
     @JsonProperty("max_duration")
     private Integer maxDuration; // Maximum flight duration in minutes
