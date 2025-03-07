@@ -13,7 +13,7 @@ import java.util.*;
 public class MockFlightService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private static final Random RANDOM = new Random();
+
 
     // Sample airport data for mock requests
     private static final List<String> AIRPORTS = List.of("TLL", "BER", "LHR", "CDG", "FRA", "AMS", "MAD", "BCN", "IST", "ZRH", "MUC", "VIE");
@@ -22,10 +22,12 @@ public class MockFlightService {
 
     public FlightSearchResponse generateMockFlights(FlightSearchRequest request) {
 
+        String seed = request.getSeed();
+        if (seed == null) seed = String.valueOf(System.currentTimeMillis());
 
         FlightSearchResponse response = new FlightSearchResponse();
 
-        List<FlightItinerary> itineraries = generateMockItineraries(request);
+        List<FlightItinerary> itineraries = generateMockItineraries(request, seed);
         response.setBestFlights(itineraries.subList(0, Math.min(2, itineraries.size())));
         response.setOtherFlights(itineraries.subList(Math.min(2, itineraries.size()), itineraries.size()));
 
@@ -43,45 +45,48 @@ public class MockFlightService {
         return response;
     }
 
-    private List<FlightItinerary> generateMockItineraries(FlightSearchRequest request) {
+    private List<FlightItinerary> generateMockItineraries(FlightSearchRequest request, String seedValue) {
         List<FlightItinerary> itineraries = new ArrayList<>();
 
-        int count = RANDOM.nextInt(3) + 2; // Generate 2 to 5 itineraries
+        long seed = seedValue.hashCode();
+        Random random = new Random(seed);
+
+        int count = random.nextInt(3) + 2; // Generate 2 to 5 itineraries
         for (int i = 0; i < count; i++) {
-            itineraries.add(generateMockItinerary(request));
+            itineraries.add(generateMockItinerary(request, random));
         }
 
         return itineraries;
     }
 
-    private FlightItinerary generateMockItinerary(FlightSearchRequest request) {
+    private FlightItinerary generateMockItinerary(FlightSearchRequest request, Random random) {
         List<Flight> flights = new ArrayList<>();
         int totalDuration = 0;
 
         // Define departure and arrival locations
-        String origin = request.getOrigin() != null ? request.getOrigin() : getRandomAirport();
+        String origin = request.getOrigin() != null ? request.getOrigin() : getRandomAirport(random);
         String destination = request.getDestination() != null ? request.getDestination() : getRandomAirportExcluding(origin);
 
         // Random flight time within given outbound date or next 30 days
         LocalDateTime departureTime = request.getOutboundDate() != null ?
                 LocalDateTime.parse(request.getOutboundDate() + " 06:00", FORMATTER) :
-                generateRandomDepartureTime();
+                generateRandomDepartureTime(random);
 
-        int flightCount = getFlightLegsBasedOnStops(request.getStops());
+        int flightCount = getFlightLegsBasedOnStops(request.getStops(), random);
 
         for (int i = 0; i < flightCount; i++) {
-            int flightDuration = 60 + RANDOM.nextInt(180); // 1 to 3 hours
+            int flightDuration = 60 + random.nextInt(180); // 1 to 3 hours
             LocalDateTime arrivalTime = departureTime.plusMinutes(flightDuration);
 
             Flight flight = new Flight();
             flight.setDepartureAirport(new Airport(origin, origin, departureTime.format(FORMATTER)));
             flight.setArrivalAirport(new Airport(destination, destination, arrivalTime.format(FORMATTER)));
             flight.setDuration(flightDuration);
-            flight.setAirplane(getRandomItem(AIRPLANES));
-            flight.setAirline(getRandomItem(AIRLINES));
+            flight.setAirplane(getRandomItem(AIRPLANES, random));
+            flight.setAirline(getRandomItem(AIRLINES, random));
             flight.setAirlineLogo("https://via.placeholder.com/50");
             flight.setTravelClass(request.getTravelClass());
-            flight.setFlightNumber("MK" + (100 + RANDOM.nextInt(900)));
+            flight.setFlightNumber("MK" + (100 + random.nextInt(900)));
             //flight.setExtensions(getRandomExtensions(request.getExtraOptions()));
             flight.setLegroom(getLegroomForClass(flight.getTravelClass(),request.getMinAvgLegroom()));
             flight.setOvernight(departureTime.getDayOfMonth() != arrivalTime.getDayOfMonth());
@@ -91,7 +96,7 @@ public class MockFlightService {
             departureTime = arrivalTime.plusMinutes(60); // 1-hour layover
         }
 
-        int price = generatePrice(request.getMaxPrice(), flights.size());
+        int price = generatePrice(request.getMaxPrice(), flights.size(), random);
 
         FlightItinerary itinerary = new FlightItinerary();
         itinerary.setFlights(flights);
@@ -101,8 +106,8 @@ public class MockFlightService {
         return itinerary;
     }
 
-    private String getRandomAirport() {
-        return getRandomItem(AIRPORTS);
+    private String getRandomAirport(Random random) {
+        return getRandomItem(AIRPORTS, random);
     }
 
     private String getRandomAirportExcluding(String exclude) {
@@ -110,10 +115,10 @@ public class MockFlightService {
     }
 
 
-    private List<String> getRandomExtensions(List<String> extraOptions) {
+    private List<String> getRandomExtensions(List<String> extraOptions, Random random) {
         List<String> availableOptions = List.of("WiFi", "Power Outlet", "Extra Legroom", "Window Seat", "Group Seating", "Close to Exit");
         if (extraOptions == null || extraOptions.isEmpty()) {
-            return availableOptions.subList(0, RANDOM.nextInt(3) + 1);
+            return availableOptions.subList(0, random.nextInt(3) + 1);
         }
         return extraOptions;
     }
@@ -138,28 +143,28 @@ public class MockFlightService {
         return finalLegroom + " cm";
     }
 
-    private int generatePrice(Integer maxPrice, int numFlights) {
-        int basePrice = 150 + RANDOM.nextInt(300);
+    private int generatePrice(Integer maxPrice, int numFlights, Random random) {
+        int basePrice = 150 + random.nextInt(300);
         int finalPrice = basePrice * numFlights;
         return (maxPrice != null && finalPrice > maxPrice) ? maxPrice : finalPrice;
     }
 
-    private LocalDateTime generateRandomDepartureTime() {
-        return LocalDateTime.now().plusDays(RANDOM.nextInt(30))
-                .withHour(6 + RANDOM.nextInt(12))
-                .withMinute(RANDOM.nextBoolean() ? 0 : 30);
+    private LocalDateTime generateRandomDepartureTime(Random random) {
+        return LocalDateTime.now().plusDays(random.nextInt(30))
+                .withHour(6 + random.nextInt(12))
+                .withMinute(random.nextBoolean() ? 0 : 30);
     }
 
-    private int getFlightLegsBasedOnStops(Integer stops) {
+    private int getFlightLegsBasedOnStops(Integer stops, Random random) {
         return switch (stops) {
             case 1 -> 1; // Nonstop only
-            case 2 -> RANDOM.nextBoolean() ? 1 : 2; // 1 stop or fewer
-            case 3 -> RANDOM.nextInt(3) + 1; // Up to 2 stops
-            default -> RANDOM.nextBoolean() ? 1 : 2; // Default (random)
+            case 2 -> random.nextBoolean() ? 1 : 2; // 1 stop or fewer
+            case 3 -> random.nextInt(3) + 1; // Up to 2 stops
+            default -> random.nextBoolean() ? 1 : 2; // Default (random)
         };
     }
 
-    private <T> T getRandomItem(List<T> list) {
-        return list.get(RANDOM.nextInt(list.size()));
+    private <T> T getRandomItem(List<T> list, Random random) {
+        return list.get(random.nextInt(list.size()));
     }
 }

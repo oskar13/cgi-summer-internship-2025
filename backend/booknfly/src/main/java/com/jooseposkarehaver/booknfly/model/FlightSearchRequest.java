@@ -84,4 +84,8 @@ public class FlightSearchRequest {
     // Seating finder
     @JsonProperty("close_to_exit")
     private Boolean closeToExit = false;
+
+    // Random generator seed
+    @JsonProperty("seed")
+    private String seed;
 }

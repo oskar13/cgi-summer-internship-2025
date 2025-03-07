@@ -14,5 +14,5 @@ public class SeatingMessage {
     private String status; // "success", "warning", or "error"
 
     @JsonProperty("text")
-    private String text;
+    private String text; // String to display in frontend UI about automatic seat selection
 }

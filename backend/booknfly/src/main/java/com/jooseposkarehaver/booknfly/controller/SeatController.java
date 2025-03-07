@@ -13,13 +13,13 @@ public class SeatController {
 
     @GetMapping("/map")
     public SeatingResponse getSeatMap(
-            @RequestParam(name = "booking_id", required = false) String bookingId, // Matches `booking_id`
-            @RequestParam(name = "numTickets", defaultValue = "1") int tickets,  // Matches `numTickets`
+            @RequestParam(name = "booking_id", required = false) String bookingId,
+            @RequestParam(name = "numTickets", defaultValue = "1") int tickets,
             @RequestParam(name = "extraLegroom", defaultValue = "false") boolean extraLegroom,
             @RequestParam(name = "windowSeats", defaultValue = "false") boolean windowSeats,
             @RequestParam(name = "groupSeating", defaultValue = "false") boolean groupSeating,
             @RequestParam(name = "closeToExit", defaultValue = "false") boolean closeToExit,
-            @RequestParam(name = "seatingClass", defaultValue = "Economy") String seatingClass) {  // Matches `seatingClass`
+            @RequestParam(name = "seatingClass", defaultValue = "Economy") String seatingClass) {
 
         return SeatMapGenerator.generateSeatMap(bookingId, tickets, extraLegroom, windowSeats, groupSeating, closeToExit, seatingClass);
     }
