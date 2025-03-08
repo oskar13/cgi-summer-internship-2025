@@ -10,8 +10,8 @@ The API follows closely the API design of https://serpapi.com/google-flights-api
 
 Main difference being that minimum average legroom (min_avg_legroom) is not a query option in the SerpApi so I have to filter the results further myself.
 
-### Flight Info API `GET /api/flights`
-**GET request structure overview:**
+### Flight Info API `POST /api/(mock)/flights`
+**POST request body structure overview:**
 
 ```json
 {
@@ -36,9 +36,9 @@ Main difference being that minimum average legroom (min_avg_legroom) is not a qu
 ```
 
 #### Example
-**Endpoint:** `GET /api/flights`
+**Endpoint:** `POST /api/flights`
 
-*Request:*
+*Request body:*
 ```json
 {
     "origin": "TLL",
@@ -949,3 +949,69 @@ Main difference being that minimum average legroom (min_avg_legroom) is not a qu
     ```
     
 </details>
+
+
+### Seat map and suggestions API `POST /api/mock/seating`
+
+Important to note here that there is no real data available for seat layouts so its only available as mock data.
+
+Also different from flights API endpoint seat class was converted from number form to string value representing the name of the class.
+
+**GET query params overview:**
+ - "booking_id" - String
+ - "numTickets", defaultValue = "1" - Integer 
+ - "extraLegroom", defaultValue = "false" - Boolean
+ - "windowSeats", defaultValue = "false" - Boolean
+ - "groupSeating", defaultValue = "false" - Boolean
+ - "closeToExit", defaultValue = "false" - Boolean
+ - "seatingClass", defaultValue = "Economy" - String
+
+*Response Structure:*
+```json
+{
+  "seats": [ // Array of seat objects
+    {
+      "seat_number": "String - Seat row number and seat letter",
+      "row": "Integer - Seat row number",
+      "seat_class": "String - First Class, Business, Premium Economy, Economy",
+      "features": [ // String array of features
+        "extra_legroom",
+        "window_seat"
+      ],
+      "available": true, // Not booked
+      "suggested": false, // Not suggested to user
+      "selected": false // Not selected/confirmed by user
+    },
+    ...
+  ]
+}
+
+```
+
+#### Example
+**Endpoint:** `GET /api/mock/seating`
+
+*Request:*
+curl --location 'http://localhost:8080/api/mock/seating/map?numTickets=3&seatingClass=Economy&booking_id=AA11'
+
+*Response:*
+```json
+{
+  "seats": [
+    {
+      "seat_number": "1A",
+      "row": 1,
+      "seat_class": "First Class",
+      "features": [
+        "extra_legroom",
+        "window_seat"
+      ],
+      "available": true,
+      "suggested": false,
+      "selected": false
+    },
+    ...
+  ]
+}
+
+```
