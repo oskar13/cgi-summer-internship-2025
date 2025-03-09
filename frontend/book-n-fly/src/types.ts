@@ -78,3 +78,23 @@ export interface FlightSearchRequest {
     close_to_exit?: boolean;
     seed?: string;
 }
+
+export interface Seat {
+    seat_number: string;
+    row: number;
+    seat_class: string;
+    features: string[];
+    available: boolean;
+    suggested: boolean;
+    selected: boolean;
+}
+
+export interface SeatingMessage {
+    status: "success" | "warning" | "error";
+    text: string;
+}
+
+export interface SeatingResponse {
+    seats: Seat[];
+    message: SeatingMessage;
+}

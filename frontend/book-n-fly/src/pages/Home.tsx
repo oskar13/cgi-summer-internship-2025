@@ -2,15 +2,17 @@ import { useState } from "react";
 import SearchForm from "../components/SearchForm";
 import FlightList from "../components/FlightList";
 import { fetchFlights } from "../api/flights";
-import { FlightItinerary, FlightSearchRequest } from "../types"; // Importing the correct type
+import { FlightSearchRequest, FlightSearchResponse } from "../types";
 
 const Home = () => {
-    const [flights, setFlights] = useState<FlightItinerary[]>([]); // Using the correct type
+    const [flights, setFlights] = useState<FlightSearchResponse | null>(null);
+    const [searchParams, setSearchParams] = useState<FlightSearchRequest | null>(null); // ✅ Store full search params
 
     const handleSearch = async (params: FlightSearchRequest) => {
         try {
+            setSearchParams(params); // ✅ Save full search request
             const data = await fetchFlights(params);
-            setFlights(data.best_flights || data.other_flights || []);
+            setFlights(data);
         } catch (error) {
             console.error(error);
         }
@@ -19,9 +21,11 @@ const Home = () => {
     return (
         <div className="container mx-auto p-4">
             <SearchForm onSearch={handleSearch} />
-            <FlightList flights={flights} /> {/* Fixed typo here */}
+            {flights && <FlightList searchResponse={flights} searchParams={searchParams} />}
         </div>
     );
 };
 
 export default Home;
+
+

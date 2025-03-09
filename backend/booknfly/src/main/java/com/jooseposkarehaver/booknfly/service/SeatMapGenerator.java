@@ -65,55 +65,109 @@ public class SeatMapGenerator {
 
         // Solo ticket case - prioritize preferences
         if (tickets == 1) {
-            for (Seat seat : availableSeats) {
-                boolean matches = true;
-                if (extraLegroom && !seat.getFeatures().contains("extra_legroom")) matches = false;
-                if (windowSeats && !seat.getFeatures().contains("window_seat")) matches = false;
-                if (closeToExit && !seat.getFeatures().contains("close_to_exit")) matches = false;
-
-                if (matches) {
-                    seat.setSuggested(true);
-                    return null; // No message needed
-                }
-            }
-
-
-            availableSeats.get(0).setSuggested(true);
-            return new SeatingMessage("warning", "No seats fully matched your preferences, but a seat was assigned.");
+            return assignBestMatchingSeat(availableSeats, extraLegroom, windowSeats, closeToExit);
         }
 
-        // Group seating case
+        // Group seating logic
         if (groupSeating) {
-            Map<Integer, List<Seat>> seatsByRow = availableSeats.stream().collect(Collectors.groupingBy(Seat::getRow));
-
-            for (List<Seat> rowSeats : seatsByRow.values()) {
-                if (rowSeats.size() >= tickets) {
-                    for (int i = 0; i < tickets; i++) {
-                        rowSeats.get(i).setSuggested(true);
-                    }
-                    return null;
-                }
-            }
-
-            // If not enough seats in a single row, break up the group
-            List<Seat> assignedSeats = new ArrayList<>();
-            for (Seat seat : availableSeats) {
-                if (assignedSeats.size() < tickets) {
-                    seat.setSuggested(true);
-                    assignedSeats.add(seat);
-                }
-            }
-
-            if (assignedSeats.size() < tickets) {
-                return new SeatingMessage("warning", "Not enough seats in the same row, but seats were assigned close together.");
-            }
-            return new SeatingMessage("info", "Seats assigned in multiple rows due to limited availability.");
+            return assignGroupSeatsWithPreferences(availableSeats, tickets, extraLegroom, windowSeats, closeToExit);
         }
 
-        // If group seating is off, just find best available seats
-        List<Seat> selectedSeats = new ArrayList<>();
+        // If not group seating, assign best available individual seats
+        return assignBestIndividualSeats(availableSeats, tickets, extraLegroom, windowSeats, closeToExit);
+    }
+
+
+    private static SeatingMessage assignBestMatchingSeat(List<Seat> availableSeats, boolean extraLegroom, boolean windowSeats, boolean closeToExit) {
         for (Seat seat : availableSeats) {
+            if ((extraLegroom && seat.getFeatures().contains("extra_legroom")) ||
+                    (windowSeats && seat.getFeatures().contains("window_seat")) ||
+                    (closeToExit && seat.getFeatures().contains("close_to_exit"))) {
+                seat.setSuggested(true);
+                return null;
+            }
+        }
+
+        // If no perfect match, assign first available seat
+        availableSeats.get(0).setSuggested(true);
+        return new SeatingMessage("warning", "No seats fully matched your preferences, but a seat was assigned.");
+    }
+
+    // Idea behind this is that when searching group seating recommendations, we try to match preferences for one seat, then put other seats nearby.
+    private static SeatingMessage assignGroupSeatsWithPreferences(List<Seat> availableSeats, int tickets, boolean extraLegroom, boolean windowSeats, boolean closeToExit) {
+
+        // Find the best starting seat
+
+        Seat bestStartingSeat = null;
+
+        for (Seat seat : availableSeats) {
+            boolean matchesAll = (!extraLegroom || seat.getFeatures().contains("extra_legroom")) &&
+                    (!windowSeats || seat.getFeatures().contains("window_seat")) &&
+                    (!closeToExit || seat.getFeatures().contains("close_to_exit"));
+
+            if (matchesAll) {
+                bestStartingSeat = seat;
+                break;  // Stop at the first perfect match
+            }
+        }
+
+        //  If no perfect match, pick any available seat
+        if (bestStartingSeat == null) {
+            bestStartingSeat = availableSeats.get(0);
+        }
+
+        // Mark the starting seat as suggested
+        bestStartingSeat.setSuggested(true);
+        List<Seat> selectedSeats = new ArrayList<>();
+        selectedSeats.add(bestStartingSeat);
+
+        // Try to find other seats in the same row or nearby
+        Seat finalBestStartingSeat = bestStartingSeat;
+        List<Seat> sameRowSeats = availableSeats.stream()
+                .filter(seat -> seat.getRow() == finalBestStartingSeat.getRow() && seat != finalBestStartingSeat)
+                .collect(Collectors.toList());
+
+        for (Seat seat : sameRowSeats) {
             if (selectedSeats.size() < tickets) {
+                seat.setSuggested(true);
+                selectedSeats.add(seat);
+            }
+        }
+
+        // If not enough seats in the same row, assign nearby seats
+        for (Seat seat : availableSeats) {
+            if (!selectedSeats.contains(seat) && selectedSeats.size() < tickets) {
+                seat.setSuggested(true);
+                selectedSeats.add(seat);
+            }
+        }
+
+        // Check if all tickets were assigned
+        if (selectedSeats.size() < tickets) {
+            return new SeatingMessage("warning", "Not enough seats matching all preferences, but closest seats were assigned.");
+        }
+
+        return null;
+    }
+
+
+
+    private static SeatingMessage assignBestIndividualSeats(List<Seat> availableSeats, int tickets, boolean extraLegroom, boolean windowSeats, boolean closeToExit) {
+        List<Seat> selectedSeats = new ArrayList<>();
+
+        for (Seat seat : availableSeats) {
+            if (selectedSeats.size() < tickets &&
+            ((extraLegroom && seat.getFeatures().contains("extra_legroom")) ||
+            (windowSeats && seat.getFeatures().contains("window_seat")) ||
+            (closeToExit && seat.getFeatures().contains("close_to_exit")))) {
+                seat.setSuggested(true);
+                selectedSeats.add(seat);
+            }
+        }
+
+        // If not enough seats match preferences, assign the next available ones
+        for (Seat seat : availableSeats) {
+            if (selectedSeats.size() < tickets && !selectedSeats.contains(seat)) {
                 seat.setSuggested(true);
                 selectedSeats.add(seat);
             }
@@ -125,6 +179,7 @@ public class SeatMapGenerator {
 
         return null;
     }
+
 
 
 
