@@ -26,7 +26,8 @@ const FlightDetails = () => {
 		4: "First",
 	};
 
-	const numTickets = searchParams?.adults ?? 1;
+	const numTickets = (Number(searchParams?.adults) || 1) + (Number(searchParams?.children) || 0);
+
 
 	// Fetch seat suggestions from API
 	const fetchSeats = async () => {
@@ -88,56 +89,57 @@ const FlightDetails = () => {
 	});
 
 	return (
-		<div className="p-4">
-			<h2 className="text-xl font-bold mb-2">Flight Details</h2>
-			<p>{itinerary.flights[0].departure_airport.id} → {itinerary.flights[0].arrival_airport.id}</p>
-			<p>Duration: {itinerary.total_duration} min</p>
-			<p>Price: ${itinerary.price}</p>
+		<div className="p-4 container mx-auto">
+			<section className="md:max-w-2/3 mx-auto mb-4">
+				<h2 className="text-3xl font-bold mb-2">Flight Details</h2>
+				<p>{itinerary.flights[0].departure_airport.id} → {itinerary.flights[0].arrival_airport.id}</p>
+				<p>Duration: {itinerary.total_duration} min</p>
+				<p>Price: ${itinerary.price}</p>
 
-			<h3 className="text-2xl font-bold mt-4">Seat Selection</h3>
-			<p className="mb-2 font-semibold">
-				Seats selected: {selectedSeats.join(", ")} ({selectedSeats.length}/{numTickets})
-			</p>
-
-
-			<div className="mb-2">
-				<h3 className="text-2xl font-semibold mb-2">Seat suggestion preferences:</h3>
-				<button
-					className={`mx-1 px-2 py-1 rounded-lg ${preferences.groupSeating ? "bg-sky-200" : "bg-gray-200"}`}
-					onClick={() => togglePreference("groupSeating")}
-				>
-					👨‍👩‍👦 Group Seating {preferences.groupSeating ? "✅" : ""}
-				</button>
-				<button
-					className={`mx-1 px-2 py-1 rounded-lg ${preferences.extraLegroom ? "bg-sky-200" : "bg-gray-200"}`}
-					onClick={() => togglePreference("extraLegroom")}
-				>
-					🦵 Extra Legroom {preferences.extraLegroom ? "✅" : ""}
-				</button>
-				<button
-					className={`mx-1 px-2 py-1 rounded-lg ${preferences.windowSeats ? "bg-sky-200" : "bg-gray-200"}`}
-					onClick={() => togglePreference("windowSeats")}
-				>
-					🪟 Window seats {preferences.windowSeats ? "✅" : ""}
-				</button>
-				<button
-					className={`mx-1 px-2 py-1 rounded-lg ${preferences.closeToExit ? "bg-sky-200" : "bg-gray-200"}`}
-					onClick={() => togglePreference("closeToExit")}
-				>
-					🏃‍♀️ Close to Exit {preferences.closeToExit ? "✅" : ""}
-				</button>
-				<p className="my-2">Suggested seats are highlighted <span className="bg-sky-300 inline-block rounded px-2">blue</span></p>
-			</div>
+				<p>{JSON.stringify(itinerary)}</p>
+				<h3 className="text-2xl font-bold mt-4">Seat Selection</h3>
+				<p className="mb-2 ">
+					Seats selected: {selectedSeats.join(", ")} ({selectedSeats.length}/{numTickets})
+				</p>
+				<div className="mb-2">
+					<h3 className="text-2xl font-semibold mb-2">Seat suggestion preferences:</h3>
+					<button
+						className={`mx-1 px-2 py-1 rounded-lg ${preferences.groupSeating ? "bg-sky-200" : "bg-gray-200"}`}
+						onClick={() => togglePreference("groupSeating")}
+					>
+						👨‍👩‍👦 Group Seating {preferences.groupSeating ? "✅" : ""}
+					</button>
+					<button
+						className={`mx-1 px-2 py-1 rounded-lg ${preferences.extraLegroom ? "bg-sky-200" : "bg-gray-200"}`}
+						onClick={() => togglePreference("extraLegroom")}
+					>
+						🦵 Extra Legroom {preferences.extraLegroom ? "✅" : ""}
+					</button>
+					<button
+						className={`mx-1 px-2 py-1 rounded-lg ${preferences.windowSeats ? "bg-sky-200" : "bg-gray-200"}`}
+						onClick={() => togglePreference("windowSeats")}
+					>
+						🪟 Window seats {preferences.windowSeats ? "✅" : ""}
+					</button>
+					<button
+						className={`mx-1 px-2 py-1 rounded-lg ${preferences.closeToExit ? "bg-sky-200" : "bg-gray-200"}`}
+						onClick={() => togglePreference("closeToExit")}
+					>
+						🏃‍♀️ Close to Exit {preferences.closeToExit ? "✅" : ""}
+					</button>
+					<p className="my-2">Suggested seats are highlighted <span className="bg-sky-300 inline-block rounded px-2">blue</span></p>
+				</div>
+			</section>
 
 			{loading ? (
 				<p>Loading seat map...</p>
 			) : error ? (
 				<p className="text-red-500">{error}</p>
 			) : (
-				<>
+				<div className="md:w-1/2 mx-auto">
 					{message && (
 						<div
-							className={`mt-4 p-2 rounded text-white ${message.status === "error"
+							className={`mt-4 p-2 md:max-w-1/2 mx-auto rounded text-white ${message.status === "error"
 								? "bg-red-500"
 								: message.status === "warning"
 									? "bg-yellow-500"
@@ -163,12 +165,15 @@ const FlightDetails = () => {
 									>
 										{seat.seat_number} {/*selectedSeats.includes(seat.seat_number) ? "✅" : ""*/}
 										{/*JSON.stringify(seat.features)*/}
+										{seat.features.includes("window_seat") ? "🪟" : ""}
+										{seat.features.includes("extra_legroom") ? "🦵" : ""}
+										{seat.features.includes("close_to_exit") ? "🏃" : ""}
 									</div>
 								))}
 							</div>
 						))}
 					</div>
-				</>
+				</div>
 			)}
 		</div>
 	);
