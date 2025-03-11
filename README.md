@@ -1,107 +1,41 @@
- # CGI Summer Internship 2025 Test Assignment
+# CGI Summer Internship 2025 Test Assignment
 
 ## **📂 Project Structure**  
 This repository is organized into two main parts:  
 - **`/frontend`** – A React application built with Vite and TailwindCSS.  
 - **`/backend`** – A Spring Boot application that handles flight data - **mock** and **real API** (SerpAPI - Google Flights).  
 
-For more details, refer to the README files inside each folder.
+For more details, refer to the **README** files inside each folder.
 
 ---
 
- ## Project Planning Stage
+## Project Planning Stage
 I started the planning phase with research about flight data APIs. Then I decided to create a set of functional requirements by analyzing the instructions and setting concrete goals for my desired implementation of this project while making sure I fulfil the requirements set by the assignment. This process took a full day.
 
+You can read the requirements here : [FUNCTIONAL_REQUIREMENTS.md](FUNCTIONAL_REQUIREMENTS.md)
 
- ## **Functional Requirements**  
- 
- ### **1. Flight Selection**  
- #### **1.1 View Available Flights**  
- - The user must see a list of available flights.
- - Flights should be loaded dynamically using scroll-triggered pagination to avoid overwhelming the user.
- - When the user scrolls near the bottom, the next bach of flights must be automatically loaded.
- - Flight data must be retrieved from a **real flight API** or a **mock API** for testing by setting a **.env variable**.  
- 
- #### **1.2 Filter Flights**  
- - Users can filter flights using the following criteria:  
-   - **Destination** (e.g., "New York")  
-   - **Date** (e.g., "28/02/2025")  
-   - **Flight Duration** (e.g., "1 hour - 24 hours")  
-   - **Price Range** (e.g., "$100 - $500")  
- 
- #### **1.3 Select a Flight**  
- - Users can select a flight to view flight details and **seat recommendations**.  
- - If the flight has layovers, display the **full itinerary** and display generated seating plans **for each flight**.  
- 
- ---
- 
- ### **2. Seat Recommendation**  
- #### **2.1 Display Airplane Seat Map**  
- - A pre-made map of the seats will be made with each seat categorized by its properties (window seat, extra legroom, close to exit, etc).
- - Show a **graphical seat map** of the airplane.  
- - Randomly mark **occupied seats**.  
- 
- #### **2.2 Recommend Seats Based on Preferences**  
- - Users can specify seat preferences:  
-   - **Window Seat**  
-   - **Extra Legroom**  
-   - **Close to Exit**  
-   - **Side-by-Side Seats** (for group bookings)  
- - The system must suggest **best available seats** based on these preferences.  
+## Project Development
 
- #### **2.3 Select & Confirm Seat(s)**  
- - Users can manually override recommendations and select their own seat.  
- - Confirmed seats must be marked as **"reserved"**.  
- - On confirmation the flight will be added to the shopping cart and the flight data with seat layout will be **saved in browser local store**.
- #### **2.4 Checkout**
- - On the shopping cart page, the user will be able to review flight data and press the checkout button.
- - After pressing the checkout button, user can view the data in "My Flights" tab. 
- 
- ---
- 
- ### **3. API Integration**  
-The application must support toggle to select between real and mock API.
+During planning phase I overestimated the capability/functionality of SerpAPI and later had some problems matching all the requirements.
 
- #### **3.1 Use Real Flight Data**  
- - Fetch flights from an external **real flight API**.  
- - The API key must be configurable via **environment variables**.  
- - Handle API errors gracefully (e.g., fallback to mock data).  
- 
- #### **3.2 Mock API for Testing (default mode)**  
- - Provide a **mock API** to simulate flight data.   
- - The mock API must return **consistent, predefined test data**.  
- 
- ---
- 
- ### **4. Testing & Quality Assurance**  
- #### **4.1 Unit Testing**  
- - Test core functionality (e.g., filtering, seat recommendation).  
- - Validate API response handling (real & mock API).  
- 
- #### **4.2 Integration Testing**  
- - Test end-to-end flow using the mock API container.  
- - Ensure the application behaves correctly in **both real and mock API modes**.  
- 
- #### **4.3 Error Handling & Edge Cases**  
- - Test cases must cover:  
-   - **API failures** (e.g., invalid API key, downtime)  
-   - **No available flights**  
-   - **All seats occupied**  
-   - **Invalid user input**  
- 
- ---
- 
- ### **5. Deployment & Documentation**  
- #### **5.1 Dockerized Application**  
- - The application must run in a **Docker container**.  
- - Users must be able to provide their **own API key** via environment variables.  
- - Default mode must use **mock data** to simplify testing.  
- 
- #### **5.2 Documentation**  
- - Provide instructions for:  
-   - Running the app with real API  
-   - Running the app in mock mode  
-   - Running tests  
- - Include API documentation.  
- 
- ---
+Most notable would be origin/destination search which requires you to input IATA codes and not place names. To work around this problem I added a another API on the frontend that suggests IATA codes as you type. The problem with this API is that its publicly available but not officially listed by the company that runs it.
+
+Pagination and lazy loading was pointless because it returned one set of results.
+
+Also a change in backend API design was providing mock and real data on separate URL's instead of switching it with env variable. I made this decision because I wanted to switch between mock and real data from the frontend and not reconfigure the backend server every time. Adding another query parameter or variable in JSON request body would have made things maybe more confusing so splitting it by URL made more sense.
+
+### Challenges
+Designing and implementing a mock API besides using real API data wasn't exactly hard but very time consuming, time that could have been used for better UI/UX or writing tests. 
+
+Most of the time was spent on implementing a mock API before I even got to use the real api inside of the project.
+
+Frontend work with react was hard because I'm quite new to it. While Java Spring framework is well documented and structured. Working with React is more of a "using a library" experience, its often hard to pass data around, even while using TypeScript, you still have to watch out for data type mismatch and bugs.
+
+### Parts that are lacking
+The seat recommendation system is bad, this should have been the main focus point in this project but was pushed aside because I decided to put my efforts into the API side.
+
+### Conclusion
+In the end I'm happy that I was able to create a project that used a mock and real API source. This way I can have a live demo running from my portfolio site without worrying anyone abusing the API calls against a paid service.
+
+### Future plans
+I see myself improving the mock data accuracy to provide more believable results. Probably try to include distance between airports as a way of calculating the price and duration of the flight.

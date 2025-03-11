@@ -23,7 +23,7 @@ const FlightDetails = () => {
 		1: "Economy",
 		2: "Premium Economy",
 		3: "Business",
-		4: "First",
+		4: "First Class",
 	};
 
 	const numTickets = (Number(searchParams?.adults) || 1) + (Number(searchParams?.children) || 0);
@@ -96,7 +96,36 @@ const FlightDetails = () => {
 				<p>Duration: {itinerary.total_duration} min</p>
 				<p>Price: ${itinerary.price}</p>
 
-				<p>{JSON.stringify(itinerary)}</p>
+				{JSON.stringify(itinerary)}
+
+				<h3 className="text-2xl font-bold mt-4">Flight Details</h3>
+				{itinerary.flights.map((flight, index) => (
+					<div key={index} className="border rounded-lg p-4 mb-4 bg-gray-100">
+						<div className="flex items-center space-x-4">
+							<img src={"http://localhost:8080" +flight.airline_logo} alt={`${flight.airline} Logo`} className="w-12 h-12" />
+							<div>
+								<h4 className="text-xl font-semibold">{flight.airline} ({flight.flight_number})</h4>
+								<p className="text-sm text-gray-600">{flight.airplane} - {travelClassMap[Number(flight.travel_class)]}</p>
+							</div>
+						</div>
+
+						<div className="mt-2">
+							<p><strong>Departure:</strong> {flight.departure_airport.name} ({flight.departure_airport.id}) at {flight.departure_airport.time}</p>
+							<p><strong>Arrival:</strong> {flight.arrival_airport.name} ({flight.arrival_airport.id}) at {flight.arrival_airport.time}</p>
+							<p><strong>Duration:</strong> {flight.duration} min</p>
+							<p><strong>Legroom:</strong> {flight.legroom}</p>
+							<p><strong>Overnight Flight:</strong> {flight.overnight ? "Yes" : "No"}</p>
+						</div>
+					</div>
+				))}
+
+				<div className="border-t pt-4 mt-4">
+					<h4 className="text-xl font-semibold">Total Trip Details</h4>
+					<p><strong>Total Duration:</strong> {itinerary.total_duration} min</p>
+					<p><strong>Price:</strong> ${itinerary.price}</p>
+					{itinerary.carbonEmissions && <p><strong>Carbon Emissions:</strong> {itinerary.carbonEmissions} kg CO₂</p>}
+				</div>
+
 				<h3 className="text-2xl font-bold mt-4">Seat Selection</h3>
 				<p className="mb-2 ">
 					Seats selected: {selectedSeats.join(", ")} ({selectedSeats.length}/{numTickets})

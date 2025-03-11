@@ -137,14 +137,20 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 						</ul>
 					)}
 				</div>
-				<input type="date" name="outbound_date" onChange={handleChange} required className="border p-2 rounded" />
+				<div className="flex flex-col">
+					<label htmlFor="outbound_date">Outbound date</label>
+					<input type="date" name="outbound_date" onChange={handleChange} required className="border p-2 rounded" />
+				</div>
 
-				<select name="travel_class" onChange={handleChange} className="border p-2 rounded">
-					<option value="1">Economy</option>
-					<option value="2">Premium Economy</option>
-					<option value="3">Business</option>
-					<option value="4">First</option>
-				</select>
+				<div className="flex flex-col">
+					<label htmlFor="travel_class">Travel Class</label>
+					<select name="travel_class" onChange={handleChange} className="border p-2 rounded">
+						<option value="1">Economy</option>
+						<option value="2">Premium Economy</option>
+						<option value="3">Business</option>
+						<option value="4">First</option>
+					</select>
+				</div>
 
 				<div className="flex flex-col">
 					<label>Adults</label>
@@ -157,7 +163,7 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 				</div>
 
 				<div className="flex flex-col">
-					<label>Max Price ($)</label>
+					<label>Max Price (€)</label>
 					<input type="number" name="max_price" min="0" value={formData.max_price || ""} onChange={handleChange} className="border p-2 rounded" />
 				</div>
 

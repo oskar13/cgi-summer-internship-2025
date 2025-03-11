@@ -19,7 +19,7 @@ const Home = () => {
     };
 
     return (
-        <div className="container mx-auto p-4">
+        <div className="container mx-auto p-4 xl:max-w-3/5 lg:max-w-3/4">
             <SearchForm onSearch={handleSearch} />
             {flights && <FlightList searchResponse={flights} searchParams={searchParams} />}
         </div>

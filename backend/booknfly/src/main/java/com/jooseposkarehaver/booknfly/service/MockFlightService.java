@@ -19,6 +19,7 @@ public class MockFlightService {
     private static final List<String> AIRPORTS = List.of("TLL", "BER", "LHR", "CDG", "FRA", "AMS", "MAD", "BCN", "IST", "ZRH", "MUC", "VIE");
     private static final List<String> AIRLINES = List.of("Mock Airlines", "Air Test", "Demo Airways", "Sample Jet");
     private static final List<String> AIRPLANES = List.of("Boeing 737", "Airbus A320", "Boeing 777", "Airbus A350");
+    private static final List<String> AIRLINE_LOGOS = List.of("/img/sample_airlines1.jpg", "/img/sample_airlines2.jpg", "/img/sample_airlines3.jpg", "/img/sample_airlines4.jpg");
 
     public FlightSearchResponse generateMockFlights(FlightSearchRequest request) {
 
@@ -84,10 +85,10 @@ public class MockFlightService {
             flight.setDuration(flightDuration);
             flight.setAirplane(getRandomItem(AIRPLANES, random));
             flight.setAirline(getRandomItem(AIRLINES, random));
-            flight.setAirlineLogo("https://via.placeholder.com/50");
+            flight.setAirlineLogo(getRandomItem(AIRLINE_LOGOS, random));
             flight.setTravelClass(request.getTravelClass());
             flight.setFlightNumber("MK" + (100 + random.nextInt(900)));
-            //flight.setExtensions(getRandomExtensions(request.getExtraOptions()));
+            flight.setExtensions(getRandomExtensions(null, random));
             flight.setLegroom(getLegroomForClass(flight.getTravelClass(),request.getMinAvgLegroom(), random));
             flight.setOvernight(departureTime.getDayOfMonth() != arrivalTime.getDayOfMonth());
 
@@ -119,9 +120,22 @@ public class MockFlightService {
 
 
     private List<String> getRandomExtensions(List<String> extraOptions, Random random) {
-        List<String> availableOptions = List.of("WiFi", "Power Outlet", "Extra Legroom", "Window Seat", "Group Seating", "Close to Exit");
+        // Using Arrays.asList instead for clarity (still immutable but more explicit)
+        List<String> availableOptions = Arrays.asList(
+                "WiFi",
+                "Power Outlet",
+                "On-demand video",
+                "Stream media to your device",
+                "Low carbon emissions",
+                "Recycled food packaging",
+                "Headrest",
+                "Free complimentary drink"
+        );
+
         if (extraOptions == null || extraOptions.isEmpty()) {
-            return availableOptions.subList(0, random.nextInt(3) + 1);
+            // Consider if you want 0 as a possible size
+            int size = random.nextInt(availableOptions.size()) + 1;
+            return new ArrayList<>(availableOptions.subList(0, size));
         }
         return extraOptions;
     }
