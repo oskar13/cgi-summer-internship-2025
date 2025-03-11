@@ -103,6 +103,7 @@ public class MockFlightService {
         itinerary.setFlights(flights);
         itinerary.setTotalDuration(totalDuration);
         itinerary.setPrice(price);
+        itinerary.setExtensions(flights.getFirst().getExtensions());
 
         // Important, generate booking token that is used for flight details generation, must be deterministic and unique to this flight
         itinerary.setBookingToken((request.getSeed() +  request.getOrigin() + request.getDestination() + totalDuration + price));
@@ -129,7 +130,9 @@ public class MockFlightService {
                 "Low carbon emissions",
                 "Recycled food packaging",
                 "Headrest",
-                "Free complimentary drink"
+                "Free complimentary drink",
+                "Working toilet",
+                "Free snack"
         );
 
         if (extraOptions == null || extraOptions.isEmpty()) {

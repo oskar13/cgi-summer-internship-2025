@@ -19,10 +19,20 @@ const Home = () => {
     };
 
     return (
-        <div className="container mx-auto p-4 xl:max-w-3/5 lg:max-w-3/4">
-            <SearchForm onSearch={handleSearch} />
-            {flights && <FlightList searchResponse={flights} searchParams={searchParams} />}
+        <div>
+            
+            <div className="bg-[url(/background.jpg)] bg-no-repeat bg-cover">
+                 
+                <div className="container mx-auto p-4 xl:max-w-1/2 lg:max-w-3/4 ">
+                <header><img src="/logo.svg" alt="Book n Fly" className="sm:max-w-80 max-w-40" /></header>
+                    <SearchForm onSearch={handleSearch} />
+                </div>
+            </div>
+                <div className="container mx-auto p-4 xl:max-w-1/2 lg:max-w-3/4 ">
+                    {flights && <FlightList searchResponse={flights} searchParams={searchParams} />}
+                </div>
         </div>
+
     );
 };
 

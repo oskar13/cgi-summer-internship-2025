@@ -91,16 +91,12 @@ const FlightDetails = () => {
 	return (
 		<div className="p-4 container mx-auto">
 			<section className="md:max-w-2/3 mx-auto mb-4">
-				<h2 className="text-3xl font-bold mb-2">Flight Details</h2>
-				<p>{itinerary.flights[0].departure_airport.id} → {itinerary.flights[0].arrival_airport.id}</p>
-				<p>Duration: {itinerary.total_duration} min</p>
-				<p>Price: ${itinerary.price}</p>
-
 				{JSON.stringify(itinerary)}
 
-				<h3 className="text-2xl font-bold mt-4">Flight Details</h3>
+				<h2 className="text-3xl font-bold mb-2">Flight Details</h2>
 				{itinerary.flights.map((flight, index) => (
-					<div key={index} className="border rounded-lg p-4 mb-4 bg-gray-100">
+					<div key={index} className="border-l-gray-300 border-l-2 rounded-lg p-4 mb-4 bg-gray-100">
+						<h3 className="mb-2 text-gray-500 font-semibold">Flight #{index+1}</h3>
 						<div className="flex items-center space-x-4">
 							<img src={"http://localhost:8080" +flight.airline_logo} alt={`${flight.airline} Logo`} className="w-12 h-12" />
 							<div>
@@ -114,16 +110,19 @@ const FlightDetails = () => {
 							<p><strong>Arrival:</strong> {flight.arrival_airport.name} ({flight.arrival_airport.id}) at {flight.arrival_airport.time}</p>
 							<p><strong>Duration:</strong> {flight.duration} min</p>
 							<p><strong>Legroom:</strong> {flight.legroom}</p>
+							{itinerary.extensions && itinerary.extensions.length > 0 && (
+							<p><strong>Extensions:</strong> {itinerary.extensions.join(", ")}</p>
+							)}
 							<p><strong>Overnight Flight:</strong> {flight.overnight ? "Yes" : "No"}</p>
 						</div>
 					</div>
 				))}
 
 				<div className="border-t pt-4 mt-4">
-					<h4 className="text-xl font-semibold">Total Trip Details</h4>
+					<h3 className="text-xl font-semibold">Total Trip Details</h3>
 					<p><strong>Total Duration:</strong> {itinerary.total_duration} min</p>
 					<p><strong>Price:</strong> ${itinerary.price}</p>
-					{itinerary.carbonEmissions && <p><strong>Carbon Emissions:</strong> {itinerary.carbonEmissions} kg CO₂</p>}
+					{itinerary.carbon_emissions && ( <p><strong>Carbon Emissions:</strong> {itinerary.carbon_emissions} kg CO₂</p>)}
 				</div>
 
 				<h3 className="text-2xl font-bold mt-4">Seat Selection</h3>
@@ -184,11 +183,11 @@ const FlightDetails = () => {
 								{rowSeats.map((seat) => (
 									<div
 										key={seat.seat_number}
-										className={`p-2 border rounded text-center cursor-pointer w-48
-											${seat.suggested ? "bg-blue-300" : ""}
-											${seat.available && !seat.suggested ? "bg-green-200" : ""} 
-											${!seat.available ? "bg-gray-300" : ""}
-											${selectedSeats.includes(seat.seat_number) ? "border-4 border-black" : ""}
+										className={`p-2 border-b-2  rounded text-center cursor-pointer w-48
+											${seat.suggested ? "bg-blue-300 border-b-blue-500" : ""}
+											${seat.available && !seat.suggested ? "bg-green-200 border-b-emerald-300" : ""} 
+											${!seat.available ? "bg-gray-300 border-b-gray-400" : ""}
+											${selectedSeats.includes(seat.seat_number) ? "border-4 border-black !border-b-black !border-b-4" : ""}
 										`}
 										onClick={() => seat.available && handleSelectSeat(seat.seat_number)}
 									>

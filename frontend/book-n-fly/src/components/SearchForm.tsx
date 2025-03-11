@@ -70,7 +70,7 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 
 			// Debounce API call (waits 1 second after user stops typing)
 			if (typingTimeout) clearTimeout(typingTimeout);
-			const newTimeout = setTimeout(() => fetchAirportSuggestions(value), 1000);
+			const newTimeout = setTimeout(() => fetchAirportSuggestions(value), 500);
 			setTypingTimeout(newTimeout);
 		}
 	};
@@ -86,7 +86,7 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="bg-white p-4 shadow rounded-lg">
+		<form onSubmit={handleSubmit} className="bg-white p-4 shadow-2xl rounded-lg">
 			<div className="grid grid-cols-2 gap-4">
 				<div className="relative">
 					<label htmlFor="origin">Flying from</label>
@@ -97,9 +97,10 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 						onChange={handleChange}
 						required
 						className="border p-2 rounded w-full"
+						autoComplete="off"
 					/>
 					{activeField === "origin" && suggestions.length > 0 && (
-						<ul className="absolute bg-white border rounded w-full mt-1 max-h-40 overflow-auto z-10">
+						<ul className="absolute bg-white border rounded w-full mt-1 max-h-40 overflow-auto z-10 shadow-xl">
 							{suggestions.map((airport) => (
 								<li
 									key={airport.iata}
@@ -122,9 +123,10 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 						onChange={handleChange}
 						required
 						className="border p-2 rounded w-full"
+						autoComplete="off"
 					/>
 					{activeField === "destination" && suggestions.length > 0 && (
-						<ul className="absolute bg-white border rounded w-full mt-1 max-h-40 overflow-auto z-10">
+						<ul className="absolute bg-white border rounded w-full mt-1 max-h-40 overflow-auto z-10 shadow-xl">
 							{suggestions.map((airport) => (
 								<li
 									key={airport.iata}
