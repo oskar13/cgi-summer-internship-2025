@@ -7,6 +7,8 @@ const FlightDetails = () => {
 	const location = useLocation();
 	const { itinerary, searchParams }: { itinerary: FlightItinerary; searchParams?: FlightSearchRequest } = location.state;
 
+	const imgBase = searchParams?.useRealApi ? "" :  "http://localhost:8080" ;
+
 	const [seats, setSeats] = useState<Seat[]>([]);
 	const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
 	const [message, setMessage] = useState<SeatingMessage | null>(null);
@@ -98,7 +100,8 @@ const FlightDetails = () => {
 					<div key={index} className="border-l-gray-300 border-l-2 rounded-lg p-4 mb-4 bg-gray-100">
 						<h3 className="mb-2 text-gray-500 font-semibold">Flight #{index+1}</h3>
 						<div className="flex items-center space-x-4">
-							<img src={"http://localhost:8080" +flight.airline_logo} alt={`${flight.airline} Logo`} className="w-12 h-12" />
+						
+							<img src={imgBase +flight.airline_logo} alt={`${flight.airline} Logo`} className="w-12 h-12" />
 							<div>
 								<h4 className="text-xl font-semibold">{flight.airline} ({flight.flight_number})</h4>
 								<p className="text-sm text-gray-600">{flight.airplane} - {travelClassMap[Number(flight.travel_class)]}</p>
@@ -110,8 +113,8 @@ const FlightDetails = () => {
 							<p><strong>Arrival:</strong> {flight.arrival_airport.name} ({flight.arrival_airport.id}) at {flight.arrival_airport.time}</p>
 							<p><strong>Duration:</strong> {flight.duration} min</p>
 							<p><strong>Legroom:</strong> {flight.legroom}</p>
-							{itinerary.extensions && itinerary.extensions.length > 0 && (
-							<p><strong>Extensions:</strong> {itinerary.extensions.join(", ")}</p>
+							{flight.extensions && flight.extensions.length > 0 && (
+							<p><strong>Extensions:</strong> {flight.extensions.join(", ")}</p>
 							)}
 							<p><strong>Overnight Flight:</strong> {flight.overnight ? "Yes" : "No"}</p>
 						</div>
@@ -121,8 +124,11 @@ const FlightDetails = () => {
 				<div className="border-t pt-4 mt-4">
 					<h3 className="text-xl font-semibold">Total Trip Details</h3>
 					<p><strong>Total Duration:</strong> {itinerary.total_duration} min</p>
+					{itinerary.extensions && itinerary.extensions.length > 0 && (
+							<p><strong>Extensions:</strong> {itinerary.extensions.join(", ")}</p>
+							)}
 					<p><strong>Price:</strong> ${itinerary.price}</p>
-					{itinerary.carbon_emissions && ( <p><strong>Carbon Emissions:</strong> {itinerary.carbon_emissions} kg CO₂</p>)}
+					{/*itinerary.carbon_emissions && ( <p><strong>Carbon Emissions:</strong> {itinerary.carbon_emissions} kg CO₂</p>)*/}
 				</div>
 
 				<h3 className="text-2xl font-bold mt-4">Seat Selection</h3>

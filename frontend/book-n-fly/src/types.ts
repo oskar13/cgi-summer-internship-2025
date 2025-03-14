@@ -77,6 +77,7 @@ export interface FlightSearchRequest {
     group_seating?: boolean;
     close_to_exit?: boolean;
     seed?: string;
+    useRealApi: boolean;
 }
 
 export interface Seat {

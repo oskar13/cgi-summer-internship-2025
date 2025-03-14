@@ -6,7 +6,8 @@ import { FlightSearchRequest, FlightSearchResponse } from "../types";
 
 const Home = () => {
     const [flights, setFlights] = useState<FlightSearchResponse | null>(null);
-    const [searchParams, setSearchParams] = useState<FlightSearchRequest | null>(null); // ✅ Store full search params
+    const [searchParams, setSearchParams] = useState<FlightSearchRequest | null>(null); // Store full search params
+
 
     const handleSearch = async (params: FlightSearchRequest) => {
         try {

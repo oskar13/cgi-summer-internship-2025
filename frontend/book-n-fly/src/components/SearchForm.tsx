@@ -19,11 +19,12 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 		group_seating: false,
 		close_to_exit: false,
 		seed: "", // Seed will be generated dynamically
+		useRealApi: false
 	});
 
 	const [suggestions, setSuggestions] = useState<{ iata: string; name: string }[]>([]);
 	const [activeField, setActiveField] = useState<"origin" | "destination" | null>(null);
-	const [typingTimeout, setTypingTimeout] = useState<NodeJS.Timeout | null>(null);
+	const [typingTimeout, setTypingTimeout] = useState<number| null>(null);
 
 
 	// Generate the seed based on selected fields
@@ -175,7 +176,7 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 				</div>
 
 				<h3 className="font-light text-xl">Seating Options:</h3>
-				<div className="col-span-2 grid grid-cols-2 gap-2">
+				<div className="col-span-2 grid sm:grid-cols-2 grid-cols-1 gap-2">
 					<label className="flex items-center">
 						<input type="checkbox" name="extra_legroom" checked={formData.extra_legroom} onChange={handleChange} className="mr-2" />
 						Extra Legroom
@@ -193,6 +194,19 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 						Close to Exit
 					</label>
 				</div>
+
+
+				<div className="flex col-span-2">
+					<div className="flex items-center h-5">
+						<input name="useMockApi" aria-describedby="helper-radio-text" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+					</div>
+					<div className="ms-2 font-semibold">
+						<p  className="mb-2">Use SerpAPI to load results from Google Flights</p>
+						<p id="useMockApi-text" className="text-xs font-normal text-gray-700">The number of free API calls are limited to 100 per month, also needs API key env variable set for the backend.</p>
+					</div>
+				</div>
+
+
 
 				<button type="submit" className="col-span-2 bg-blue-500 text-white p-2 rounded">Search Flights</button>
 			</div>

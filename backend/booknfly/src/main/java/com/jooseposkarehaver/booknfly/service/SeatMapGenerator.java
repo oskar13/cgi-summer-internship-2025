@@ -90,6 +90,9 @@ public class SeatMapGenerator {
 
         // If no perfect match, assign first available seat
         availableSeats.get(0).setSuggested(true);
+        if (!extraLegroom && !windowSeats && !closeToExit) {
+            return null; // No options were selected, no need to send a message.
+        }
         return new SeatingMessage("warning", "No seats fully matched your preferences, but a seat was assigned.");
     }
 

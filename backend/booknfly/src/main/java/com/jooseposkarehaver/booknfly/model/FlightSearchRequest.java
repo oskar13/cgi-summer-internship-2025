@@ -23,7 +23,7 @@ public class FlightSearchRequest {
     @NotNull(message = "Missing `type` parameter.")
     @Min(value = 1, message = "`type` must be either 1 (Round trip) or 2 (One way).")
     @Max(value = 2, message = "`type` must be either 1 (Round trip) or 2 (One way).")
-    private Integer type = 2; // 1 - Round trip (not implemented yet), 2 - One way
+    private Integer type = 2; // 1 - Round trip (not implemented in UI and mock results yet), 2 - One way
 
     @NotNull(message = "Missing `adults` parameter.")
     @Min(value = 0, message = "`adults` cannot be negative.")
@@ -46,7 +46,7 @@ public class FlightSearchRequest {
     @JsonProperty("travel_class")
     private String travelClass = "1"; // 1 - Economy, 2 - Premium Economy, 3 - Business, 4 - First
 
-    @Min(value = 0, message = "Must be a positive integer")
+    @Min(value = 1, message = "Must be a positive integer over 0")
     @JsonProperty("max_price")
     private Integer maxPrice;
 
@@ -54,18 +54,19 @@ public class FlightSearchRequest {
     @JsonProperty("max_duration")
     private Integer maxDuration; // Maximum flight duration in minutes
 
-    @NotNull(message = "Missing `stops` parameter.") // Ensures it's not null
+    //@NotNull(message = "Missing `stops` parameter.") // Ensures it's not null
     @Min(value = 0, message = "`stops` must be between 0 and 3.")
     @Max(value = 3, message = "`stops` must be between 0 and 3.")
     private Integer stops = 0; // 0 - Any stops, 1 - Nonstop, 2 - 1 stop, 3 - 2 stops
 
+    // Does not exist on Serp API, have to filter results later.
     @NotNull(message = "Missing `min_avg_legroom` parameter.")
     @Min(value = 50, message = "Must be over 50")
     @JsonProperty("min_avg_legroom")
     private Integer minAvgLegroom = 50; // Minimum average legroom in cm
 
 
-    //Seationg Options
+    //Seating options, not user by real API
 
     // Seating finder
     @JsonProperty("extra_legroom")
@@ -83,7 +84,7 @@ public class FlightSearchRequest {
     @JsonProperty("close_to_exit")
     private Boolean closeToExit = false;
 
-    // Random generator seed
+    // Random generator seed for mock API
     @JsonProperty("seed")
     private String seed;
 }

@@ -12,7 +12,7 @@ const FlightCard: React.FC<FlightCardProps> = ({ itinerary, searchParams }) => {
 
     const handleClick = () => {
         navigate(`/flight/${itinerary.booking_token}`, { 
-            state: { itinerary, searchParams } // ✅ Pass searchParams
+            state: { itinerary, searchParams } // Pass searchParams
         });
     };
 
