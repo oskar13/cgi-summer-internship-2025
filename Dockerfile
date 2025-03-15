@@ -21,9 +21,6 @@ WORKDIR /app
 COPY --from=backend-build /app/backend/target/*.jar app.jar
 COPY --from=frontend-build /app/frontend/dist /app/static
 
-# Environment variables
-ENV API_KEY=${API_KEY}
-ENV API_URL=${API_URL}
 
 # Expose port
 EXPOSE 8080

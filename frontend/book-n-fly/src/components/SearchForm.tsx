@@ -24,7 +24,7 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 
 	const [suggestions, setSuggestions] = useState<{ iata: string; name: string }[]>([]);
 	const [activeField, setActiveField] = useState<"origin" | "destination" | null>(null);
-	const [typingTimeout, setTypingTimeout] = useState<number| null>(null);
+	const [typingTimeout, setTypingTimeout] = useState<number | null>(null);
 
 
 	// Generate the seed based on selected fields
@@ -142,7 +142,14 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 				</div>
 				<div className="flex flex-col">
 					<label htmlFor="outbound_date">Outbound date</label>
-					<input type="date" name="outbound_date" onChange={handleChange} required className="border p-2 rounded" />
+					<input
+						type="date"
+						name="outbound_date"
+						onChange={handleChange}
+						required
+						min={new Date().toISOString().split('T')[0]}
+						className="border p-2 rounded"
+					/>
 				</div>
 
 				<div className="flex flex-col">
@@ -213,7 +220,7 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 						<input name="useRealApi" onChange={handleChange} type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
 					</div>
 					<div className="ms-2 font-semibold">
-						<p  className="mb-2">Use SerpAPI to load results from Google Flights</p>
+						<p className="mb-2">Use SerpAPI to load results from Google Flights</p>
 						<p id="useMockApi-text" className="text-xs font-normal text-gray-700">The number of free API calls are limited to 100 per month, also needs API key env variable set for the backend.</p>
 					</div>
 				</div>
