@@ -76,7 +76,14 @@ const FlightDetails = () => {
 		}));
 	};
 
-	const handleSelectSeat = (seatNumber: string) => {
+	const handleSelectSeat = (seatNumber: string, seatClass: string) => {
+		const userTravelClass = travelClassMap[searchParams?.travel_class ?? 1]; // Get booked class
+		
+		if (seatClass !== userTravelClass) {
+			alert(`You can only select ${userTravelClass} seats.`);
+			return;
+		}
+	
 		if (selectedSeats.includes(seatNumber)) {
 			// Deselect seat
 			setSelectedSeats((prevSelected) => prevSelected.filter((seat) => seat !== seatNumber));
@@ -193,19 +200,25 @@ const FlightDetails = () => {
 								{rowSeats.map((seat) => (
 									<div
 										key={seat.seat_number}
-										className={`p-2 border-b-2  rounded text-center cursor-pointer w-48
+										className={`p-2 border-b-2  rounded text-center w-48
+											${seat.seat_class !== travelClassMap[searchParams?.travel_class ?? 1] ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+
 											${seat.suggested ? "bg-blue-300 border-b-blue-500" : ""}
 											${seat.available && !seat.suggested ? "bg-green-200 border-b-emerald-300" : ""} 
 											${!seat.available ? "bg-gray-300 border-b-gray-400" : ""}
 											${selectedSeats.includes(seat.seat_number) ? "border-4 border-black !border-b-black !border-b-4" : ""}
 										`}
-										onClick={() => seat.available && handleSelectSeat(seat.seat_number)}
+										onClick={() => seat.available && handleSelectSeat(seat.seat_number, seat.seat_class)}
 									>
 										{seat.seat_number} {/*selectedSeats.includes(seat.seat_number) ? "✅" : ""*/}
 										{/*JSON.stringify(seat.features)*/}
 										{seat.features.includes("window_seat") ? "🪟" : ""}
 										{seat.features.includes("extra_legroom") ? "🦵" : ""}
 										{seat.features.includes("close_to_exit") ? "🏃" : ""}
+										<br />
+										<p className="text-xs font-extralight">{seat.seat_class}
+										
+										</p>
 									</div>
 								))}
 							</div>
