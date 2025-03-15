@@ -198,7 +198,7 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 
 				<div className="flex col-span-2">
 					<div className="flex items-center h-5">
-						<input name="useMockApi" aria-describedby="helper-radio-text" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
+						<input name="useRealApi" onChange={handleChange} type="checkbox" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" />
 					</div>
 					<div className="ms-2 font-semibold">
 						<p  className="mb-2">Use SerpAPI to load results from Google Flights</p>

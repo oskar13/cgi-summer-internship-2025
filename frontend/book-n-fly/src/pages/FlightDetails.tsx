@@ -93,7 +93,6 @@ const FlightDetails = () => {
 	return (
 		<div className="p-4 container mx-auto">
 			<section className="md:max-w-2/3 mx-auto mb-4">
-				{JSON.stringify(itinerary)}
 
 				<h2 className="text-3xl font-bold mb-2">Flight Details</h2>
 				{itinerary.flights.map((flight, index) => (

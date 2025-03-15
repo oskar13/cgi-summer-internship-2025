@@ -7,15 +7,18 @@ import { FlightSearchRequest, FlightSearchResponse } from "../types";
 const Home = () => {
     const [flights, setFlights] = useState<FlightSearchResponse | null>(null);
     const [searchParams, setSearchParams] = useState<FlightSearchRequest | null>(null); // Store full search params
+    const [error, setError] = useState<string | null>(null);
 
 
     const handleSearch = async (params: FlightSearchRequest) => {
+        setError(null); 
         try {
-            setSearchParams(params); // ✅ Save full search request
+            setSearchParams(params); // Save full search request
             const data = await fetchFlights(params);
             setFlights(data);
         } catch (error) {
-            console.error(error);
+            setError(error instanceof Error ? error.message : "Something went wrong");
+            setFlights(null);
         }
     };
 
@@ -29,9 +32,10 @@ const Home = () => {
                     <SearchForm onSearch={handleSearch} />
                 </div>
             </div>
-                <div className="container mx-auto p-4 xl:max-w-1/2 lg:max-w-3/4 ">
-                    {flights && <FlightList searchResponse={flights} searchParams={searchParams} />}
-                </div>
+            <div className="container mx-auto p-4 xl:max-w-1/2 lg:max-w-3/4">
+                {error && <div className="text-red-500 bg-red-100 p-4 rounded">{error}</div>} {/* ✅ Show error */}
+                {flights && <FlightList searchResponse={flights} searchParams={searchParams} />}
+            </div>
         </div>
 
     );
