@@ -12,6 +12,16 @@ Ensure you have the following installed on your machine:
 
         `mvn spring-boot:run`
 
+- **Option3: Docker**
+    - Docker installed
+    - `.evn.local` file in folder has api key 
+    - Run:
+
+        `docker build -t booknfly-backend .`
+        
+        `docker run -p 8080:8080 --env-file .env.local booknfly-backend`
+    
+
 
 
 ---
