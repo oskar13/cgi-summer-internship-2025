@@ -138,7 +138,7 @@ const FlightDetails = () => {
 					{itinerary.extensions && itinerary.extensions.length > 0 && (
 							<p><strong>Extensions:</strong> {itinerary.extensions.join(", ")}</p>
 							)}
-					<p><strong>Price:</strong> ${itinerary.price}</p>
+					<p><strong>Price:</strong> €{itinerary.price}</p>
 					{/*itinerary.carbon_emissions && ( <p><strong>Carbon Emissions:</strong> {itinerary.carbon_emissions} kg CO₂</p>)*/}
 				</div>
 

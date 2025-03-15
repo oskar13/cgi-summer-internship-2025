@@ -175,6 +175,18 @@ const SearchForm = ({ onSearch }: { onSearch: (params: FlightSearchRequest) => v
 					<input type="number" name="max_duration" min="1" value={formData.max_duration || ""} onChange={handleChange} className="border p-2 rounded" />
 				</div>
 
+				<div className="flex flex-col">
+					<label htmlFor="stops">Number of Stops</label>
+					<select name="stops" onChange={handleChange} value={formData.stops} className="border p-2 rounded">
+						<option value="0">Any number of stops</option>
+						<option value="1">Nonstop only</option>
+						<option value="2">1 stop or fewer</option>
+						<option value="3">2 stops or fewer</option>
+					</select>
+				</div>
+
+				<div></div>
+
 				<h3 className="font-light text-xl">Seating Options:</h3>
 				<div className="col-span-2 grid sm:grid-cols-2 grid-cols-1 gap-2">
 					<label className="flex items-center">

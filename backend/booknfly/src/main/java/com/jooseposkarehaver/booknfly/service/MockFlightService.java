@@ -73,7 +73,9 @@ public class MockFlightService {
                 LocalDateTime.parse(request.getOutboundDate() + " 06:00", FORMATTER) :
                 generateRandomDepartureTime(random);
 
-        int flightCount = getFlightLegsBasedOnStops(request.getStops(), random);
+        //int flightCount = getFlightLegsBasedOnStops(request.getStops(), random);
+        // Not yet implemented, have to generate flight legs to destination that make sense
+        int flightCount = 1;
 
         for (int i = 0; i < flightCount; i++) {
             int flightDuration = 60 + random.nextInt(180); // 1 to 3 hours
