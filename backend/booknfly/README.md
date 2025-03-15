@@ -1,6 +1,26 @@
 # Backend
 
+## **Requirements**
+Ensure you have the following installed on your machine:
+- **Java 21** (JDK)
+- **Option 1: IDE like IntelliJ**
+    - Lombok plugin configured
+    - Configure SERP_API_KEY env variable in run configuration.
+- **Option 2: Maven** 
+    - Configure SERP_API_KEY variable for you shell
+    - Run:
 
+        `mvn spring-boot:run`
+
+
+
+---
+
+# Deployment
+
+The Dockerfile in the project root packages backend and frontend code in one container. When changing the port of the backend server make sure to update the API base url env variable in the frontend.
+
+---
 
 ## API Documentation From Frontend to Backend
 
