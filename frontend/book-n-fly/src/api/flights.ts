@@ -1,10 +1,12 @@
 import { FlightSearchRequest } from "../types";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
 export const fetchFlights = async (searchParams: FlightSearchRequest) => {
     console.log(JSON.stringify(searchParams));
     const apiUrl = searchParams.useRealApi 
-        ? "http://localhost:8080/api/flights" 
-        : "http://localhost:8080/api/mock/flights";
+        ? API_BASE_URL+"/api/flights" 
+        : API_BASE_URL+"/api/mock/flights";
 
     try {
         const response = await fetch(apiUrl, {

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { FlightItinerary, FlightSearchRequest } from "../types";
 import { format } from "date-fns";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 
 interface FlightCardProps {
@@ -12,7 +13,7 @@ interface FlightCardProps {
 const FlightCard: React.FC<FlightCardProps> = ({ itinerary, searchParams }) => {
     const navigate = useNavigate();
     const firstFlight = itinerary.flights[0];
-    const imgBase = searchParams?.useRealApi ? "" :  "http://localhost:8080" ;
+    const imgBase = searchParams?.useRealApi ? "" :  API_BASE_URL ;
 
 
     const formattedDepartureTime = format(new Date(firstFlight.departure_airport.time), "dd MMM yyyy, HH:mm");

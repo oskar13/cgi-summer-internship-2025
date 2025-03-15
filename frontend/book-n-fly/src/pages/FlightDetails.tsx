@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { FlightItinerary, FlightSearchRequest, Seat, SeatingMessage } from "../types";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
+
 const FlightDetails = () => {
+	console.log( import.meta.env.API_BASE_URL )
+	console.log("skibidy")
 	const { booking_token } = useParams<{ booking_token: string }>();
 	const location = useLocation();
 	const { itinerary, searchParams }: { itinerary: FlightItinerary; searchParams?: FlightSearchRequest } = location.state;
 
-	const imgBase = searchParams?.useRealApi ? "" :  "http://localhost:8080" ;
+	const imgBase = searchParams?.useRealApi ? "" :  API_BASE_URL ;
 
 	const [seats, setSeats] = useState<Seat[]>([]);
 	const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
@@ -45,7 +50,7 @@ const FlightDetails = () => {
 				booking_id: booking_token || "",
 			});
 
-			const response = await fetch(`http://localhost:8080/api/mock/seating/map?${queryParams.toString()}`);
+			const response = await fetch(`${API_BASE_URL}/api/mock/seating/map?${queryParams.toString()}`);
 			if (!response.ok) throw new Error("Failed to fetch seat data.");
 			const data = await response.json();
 
